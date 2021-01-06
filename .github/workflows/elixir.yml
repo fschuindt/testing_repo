@@ -1,0 +1,34 @@
+name: Elixir CI
+
+on: [push, pull_request]
+
+jobs:
+  to_staging:
+    name: "Deploy To Staging"
+    runs-on: ubuntu-latest
+    env:
+      K8S_STAGING_CLUSTER: "zaz"
+      K8S_STAGING_URL: "foo"
+      K8S_STAGING_USER: "bar"
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Download kubectl
+        run: curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+      - name: Set kubectl as executable
+        run: chmod +x ./kubectl
+      - name: Configure Cluster Name
+        run: ./kubectl config set-cluster $K8S_STAGING_CLUSTER --server=$K8S_STAGING_URL --insecure-skip-tls-verify=true
+      - name: Configure Cluster Credentials
+        run: ./kubectl config set-credentials $K8S_STAGING_USER --token=$K8S_STAGING_TOKEN
+      - name: Configure Cluster Context
+        run: ./kubectl config set-context default-context --cluster=$K8S_STAGING_CLUSTER --user=$K8S_STAGING_USER
+      - name: Use  Cluster Context
+        run: ./kubectl config use-context default-context
+      - name: Test Cluster Connection
+        run: ./kubectl get nodes
+      - name: Get Image Version
+        run: export IMAGE_VERSION="sha-$(git rev-parse --short HEAD)"
+      - name: Get Image Tag
+        run: export IMAGE_TAG="foo:$IMAGE_VERSION"
+      - name: Deploy
+        run: /bin/sh ./k8s/bin/k8s push state staging
