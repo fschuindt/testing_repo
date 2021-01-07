@@ -13,6 +13,7 @@ jobs:
       K8S_STAGING_TOKEN: ${{ secrets.K8S_STAGING_TOKEN }}
     if: github.ref == 'refs/heads/master'
     steps:
+      - uses: actions/checkout@v2
       - name: Download kubectl
         run: curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
       - name: Set kubectl as executable
