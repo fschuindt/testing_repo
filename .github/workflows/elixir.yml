@@ -31,3 +31,5 @@ jobs:
         run: export IMAGE_VERSION="sha-$(git rev-parse --short HEAD)"
       - name: Get Image Tag
         run: export IMAGE_TAG="foo:$IMAGE_VERSION"
+      - name: Test script
+        run: "${GITHUB_WORKSPACE}/folder/executable.sh"
