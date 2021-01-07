@@ -32,4 +32,4 @@ jobs:
       - name: Get Image Tag
         run: export IMAGE_TAG="foo:$IMAGE_VERSION"
       - name: Test script
-        run: "${GITHUB_WORKSPACE}/folder/executable.sh"
+        run: "./folder/executable.sh"
